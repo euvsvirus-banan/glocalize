@@ -7,7 +7,7 @@ Run `./setup`
 
 ### Add a service
 1. Put the clone url in `.repositories`
-2. Ignore them repository name in `.gitignore`.
+2. Ignore them repository name in `.gitignore`
 3. Add the service to `docker-compose.yml`
 
 ### Start
