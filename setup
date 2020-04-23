@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -o errexit -o pipefail -o nounset
+
+this_path="$(pwd)"
+this_dir="$(basename "${this_path}")"
+echo "> Setting up \"${this_dir}\""
+
+repositories_file=".repositories"
+absolute_path="$(pwd)/${repositories_file}"
+
+if [[ ! -f "${repositories_file}" ]]; then
+  echo "> \"${repositories_file}\" does not exists"
+  echo "> Creating \"${repositories_file}\""
+  touch "${repositories_file}"
+fi
+
+clone_repositories () {
+  echo "> Cloning all repositories in \".repositories\":"
+  
+  echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+  while IFS="" read -r repository || [ -n "${repository}" ]; do
+    # Extract repository name
+    directory=${repository##*/}
+    directory=${directory%.*}
+
+    # Does a copy of the repository exist?
+    if [[ -d ${directory} ]]
+    then
+        echo "> A copy of ${directory} already exists"
+        echo "> Do you wish to overwrite? [y/n] "
+        read -r -n 1 overwrite </dev/tty
+        echo ""
+        if [[ ${overwrite} = "y" ]]
+        then
+          # Remove existing verisons of the repository
+          rm -rf "${directory}"
+          # Clone a new copy of the repository
+          git clone "${repository}"
+        else
+          echo "> Skipping ${directory}"
+        fi
+    else
+      # Clone a new copy of the repository
+      git clone "${repository}"
+    fi
+    echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+  done < "${absolute_path}"
+  echo "> Setup done!"
+}
+
+clone_repositories
