@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  frontend:
+    build: ./frontend
+    command: start
+    working_dir: /usr/src/app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/usr/src/app/src
